@@ -33,6 +33,13 @@ function errorHandler(error: RequestError): Promise<any> {
         message: (data && data.message) || statusText,
       })
     }
+    // 422 参数验证错误
+    if (status === 422) {
+      showNotify({
+        type: 'danger',
+        message: data.message || '参数验证失败',
+      })
+    }
     // 401 未登录/未授权
     if (status === 401 && data.result && data.result.isLogin) {
       showNotify({
