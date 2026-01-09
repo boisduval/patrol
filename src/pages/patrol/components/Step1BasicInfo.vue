@@ -7,11 +7,42 @@ import FormSectionTitle from './FormSectionTitle.vue'
 const formData = inject<PatrolFormData>('patrolFormData')!
 
 const showDatePicker = ref(false)
-const currentDate = ref([new Date().getFullYear().toString(), (new Date().getMonth() + 1).toString().padStart(2, '0'), new Date().getDate().toString().padStart(2, '0')])
+const showTimePicker = ref(false)
+
+const now = new Date()
+const currentDate = ref([
+  now.getFullYear().toString(),
+  (now.getMonth() + 1).toString().padStart(2, '0'),
+  now.getDate().toString().padStart(2, '0'),
+])
+const currentTime = ref([
+  now.getHours().toString().padStart(2, '0'),
+  now.getMinutes().toString().padStart(2, '0'),
+  now.getSeconds().toString().padStart(2, '0'),
+])
+
+function setNow() {
+  const d = new Date()
+  const dateStr = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`
+  formData.patrolDate = dateStr
+  // 同步更新 picker 的内部值
+  currentDate.value = [d.getFullYear().toString(), (d.getMonth() + 1).toString().padStart(2, '0'), d.getDate().toString().padStart(2, '0')]
+  currentTime.value = [d.getHours().toString().padStart(2, '0'), d.getMinutes().toString().padStart(2, '0'), d.getSeconds().toString().padStart(2, '0')]
+}
 
 function onConfirmDate({ selectedValues }: { selectedValues: string[] }) {
-  formData.patrolDate = selectedValues.join('-')
+  currentDate.value = selectedValues
   showDatePicker.value = false
+  // 选完日期自动弹时间
+  showTimePicker.value = true
+}
+
+function onConfirmTime({ selectedValues }: { selectedValues: string[] }) {
+  currentTime.value = selectedValues
+  const [Y, M, D] = currentDate.value
+  const [h, m, s] = selectedValues
+  formData.patrolDate = `${Y}-${M}-${D} ${h}:${m}:${s}`
+  showTimePicker.value = false
 }
 </script>
 
@@ -41,19 +72,28 @@ function onConfirmDate({ selectedValues }: { selectedValues: string[] }) {
           </div>
 
           <!-- Date Field -->
-          <div class="px-4 py-3 rounded-lg bg-[#f7f8fa] cursor-pointer" @click="showDatePicker = true">
-            <div class="text-tip font-bold mb-1">
-              巡检日期
+          <div class="px-4 py-3 rounded-lg bg-[#f7f8fa] relative">
+            <div class="mb-1 flex items-center justify-between">
+              <div class="text-tip font-bold">
+                巡检时间
+              </div>
+              <div
+                class="bg-primary-light text-primary text-xs font-bold px-2 py-0.5 rounded cursor-pointer transition-opacity active:opacity-70"
+                @click="setNow"
+              >
+                此刻
+              </div>
             </div>
             <van-field
               v-model="formData.patrolDate"
               readonly
               is-link
               :border="false"
-              class="text-item !p-0 !bg-transparent"
+              class="text-item cursor-pointer !p-0 !bg-transparent"
+              @click="showDatePicker = true"
             >
               <template #left-icon>
-                <div class="i-carbon:calendar text-lg mr-2" style="color: var(--color-primary)" />
+                <div class="i-carbon:timer text-lg mr-2" style="color: var(--color-primary)" />
               </template>
             </van-field>
           </div>
@@ -98,20 +138,38 @@ function onConfirmDate({ selectedValues }: { selectedValues: string[] }) {
       </van-cell-group>
     </div>
 
-    <!-- Info Tip -->
-    <!-- <div class="mt-6 px-4 py-3 border border-orange-100 rounded-lg bg-orange-50 flex items-start">
-      <div class="i-carbon:information-filled text-lg text-orange-400 mr-3 mt-0.5" />
-      <p class="text-tip text-orange-700 leading-normal">
-        数据将用于生产分析，请确保 <span class="font-bold underline">槽号</span> 输入准确。
-      </p>
-    </div> -->
+    <!-- Auto-save Notice -->
+    <div class="text-tip mt-8 opacity-60 flex items-center justify-center space-x-2">
+      <div class="i-carbon:cloud-auditing text-base" />
+      <span>您的输入将实时自动保存至本地草稿</span>
+    </div>
 
+    <!-- Info Tip (if previously commented out, let's restore/re-enable it if needed, but the user specifically asked for auto-save hint) -->
+    <div class="mt-4 px-4 py-3 border border-blue-50 rounded-lg bg-blue-50/50 flex items-start">
+      <div class="i-carbon:information-filled text-lg text-blue-400 mr-3 mt-0.5" />
+      <p class="text-tip text-blue-700 leading-normal">
+        系统已开启 <span class="font-bold">自动暂存</span>。即便刷新页面或意外退出，您之前填写的内容也会被完整保留。
+      </p>
+    </div>
+
+    <!-- 日期选择 -->
     <van-popup v-model:show="showDatePicker" position="bottom" round>
       <van-date-picker
         v-model="currentDate"
         title="选择日期"
         @confirm="onConfirmDate"
         @cancel="showDatePicker = false"
+      />
+    </van-popup>
+
+    <!-- 时间选择 -->
+    <van-popup v-model:show="showTimePicker" position="bottom" round>
+      <van-time-picker
+        v-model="currentTime"
+        title="选择精确时间"
+        :columns-type="['hour', 'minute', 'second']"
+        @confirm="onConfirmTime"
+        @cancel="showTimePicker = false"
       />
     </van-popup>
   </div>
