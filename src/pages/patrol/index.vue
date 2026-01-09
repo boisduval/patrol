@@ -168,7 +168,7 @@ function onSubmit() {
             plain
             type="primary"
             class="w-1/3 !font-bold !rounded-xl !h-11"
-            @click="onSave"
+            @click="onSave()"
           >
             暂存
           </van-button>
