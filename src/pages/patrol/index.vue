@@ -123,26 +123,24 @@ function onSubmit() {
 </script>
 
 <template>
-  <div class="page-container flex flex-col">
-    <!-- Fixed Steps Header -->
-    <div class="fixed-header border-b border-gray-100 bg-white w-full left-0 top-0 fixed z-40">
-      <div class="px-4 py-3">
-        <van-steps :active="active" active-color="var(--color-primary)" inactive-color="#ebedf0">
-          <van-step>基础</van-step>
-          <van-step>观察</van-step>
-          <van-step>运行</van-step>
-          <van-step>提交</van-step>
-        </van-steps>
-      </div>
+  <div class="page-container bg-[#fafafa] flex flex-col inset-0 fixed overflow-hidden">
+    <!-- Steps Header -->
+    <div class="px-4 py-3 border-b border-gray-100 bg-white shadow-sm z-40">
+      <van-steps :active="active" active-color="var(--color-primary)" inactive-color="#ebedf0">
+        <van-step>基础项目</van-step>
+        <van-step>重点观测</van-step>
+        <van-step>曲线指标</van-step>
+        <van-step>确认提交</van-step>
+      </van-steps>
     </div>
 
-    <!-- Scrollable Content Area -->
-    <div class="content-area mx-auto pb-28 pt-12 flex-1 max-w-xl w-full relative z-10 overflow-y-auto">
+    <!-- Independent Scrollable Content Area -->
+    <div
+      :key="active"
+      class="px-4 py-6 pb-24 flex-1 overflow-y-auto"
+    >
       <transition name="van-fade" mode="out-in">
-        <Step1BasicInfo v-if="active === 0" />
-        <Step2Observation v-else-if="active === 1" />
-        <Step3CurveTechnical v-else-if="active === 2" />
-        <Step4Notes v-else-if="active === 3" />
+        <component :is="[Step1BasicInfo, Step2Observation, Step3CurveTechnical, Step4Notes][active]" />
       </transition>
     </div>
 
@@ -200,9 +198,16 @@ function onSubmit() {
   </div>
 </template>
 
+<route lang="json5">
+{
+  name: 'Patrol',
+}
+</route>
+
 <style scoped>
 .page-container {
   background-color: #f7f8fa; /* Vant background color */
+  top: var(--van-nav-bar-height);
 }
 .van-button {
   display: flex;
