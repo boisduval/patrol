@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { provide, reactive, ref } from 'vue'
+import { provide, reactive, ref, watch } from 'vue'
 import './styles/typography.css'
 import { showToast } from 'vant'
 import type { PatrolFormData } from './types'
@@ -68,6 +68,36 @@ const formData = reactive<PatrolFormData>({
 
 provide('patrolFormData', formData)
 
+// --- Local Storage Persistence ---
+const STORAGE_KEY = 'patrol_form_draft'
+
+function onSave(silent = false) {
+  const payload = {
+    formData: JSON.parse(JSON.stringify(formData)),
+    activeStep: active.value,
+  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
+  if (!silent)
+    showToast({ message: '暂存成功', type: 'success' })
+}
+
+// Restore data on mount
+const savedData = localStorage.getItem(STORAGE_KEY)
+if (savedData) {
+  try {
+    const { formData: savedForm, activeStep } = JSON.parse(savedData)
+    Object.assign(formData, savedForm)
+    active.value = activeStep || 0
+  }
+  catch (e) {
+    console.error('Failed to parse saved data', e)
+  }
+}
+// Auto save on any change
+watch([() => formData, active], () => {
+  onSave(true)
+}, { deep: true })
+
 function nextStep() {
   if (active.value < 3)
     active.value += 1
@@ -87,6 +117,7 @@ function onSubmit() {
   setTimeout(() => {
     loading.value = false
     showToast({ message: '提交成功', type: 'success' })
+    localStorage.removeItem(STORAGE_KEY) // Clear draft after successful submit
   }, 1000)
 }
 </script>
@@ -117,7 +148,8 @@ function onSubmit() {
 
     <!-- Fixed Footer Actions -->
     <div class="p-4 border-t border-gray-100 bg-white flex w-full items-center bottom-0 left-0 justify-between fixed z-50">
-      <div v-if="active > 0" class="pr-2 w-1/3">
+      <!-- Steps Navigation -->
+      <div v-if="active > 0" class="pr-2 w-1/4">
         <van-button
           block
           class="!font-bold !rounded-xl !h-11"
@@ -127,17 +159,31 @@ function onSubmit() {
         </van-button>
       </div>
 
-      <div :class="active === 0 ? 'w-full' : 'w-2/3'">
-        <van-button
-          v-if="active < 3"
-          block
-          type="primary"
-          class="shadow-sm !font-bold !rounded-xl !h-11"
-          @click="nextStep"
-        >
-          下一步
-        </van-button>
+      <!-- Main Action Area -->
+      <div class="flex flex-1 gap-2 items-center" :class="active === 0 ? 'w-full' : 'w-3/4'">
+        <!-- Intermediate Steps: Draft + Next -->
+        <template v-if="active < 3">
+          <van-button
+            v-if="active > 0"
+            plain
+            type="primary"
+            class="w-1/3 !font-bold !rounded-xl !h-11"
+            @click="onSave"
+          >
+            暂存
+          </van-button>
+          <van-button
+            block
+            type="primary"
+            class="shadow-sm !font-bold !rounded-xl !h-11"
+            :class="active > 0 ? 'flex-1' : ''"
+            @click="nextStep"
+          >
+            下一步
+          </van-button>
+        </template>
 
+        <!-- Final Step: Submit -->
         <van-button
           v-if="active === 3"
           block
