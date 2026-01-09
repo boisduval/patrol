@@ -6,7 +6,9 @@ import type { PatrolFormData } from './types'
 import Step1BasicInfo from './components/Step1BasicInfo.vue'
 import Step2Observation from './components/Step2Observation.vue'
 import Step3CurveTechnical from './components/Step3CurveTechnical.vue'
-import Step4Notes from './components/Step4Notes.vue'
+import Step4Validation from './components/Step4Validation.vue'
+import Step5Notes from './components/Step4Notes.vue'
+import { patrolValidationRules } from './validationRules'
 
 // --- State Management ---
 
@@ -98,8 +100,17 @@ watch([() => formData, active], () => {
   onSave(true)
 }, { deep: true })
 
+const missingFields = computed(() => validateForm())
+
 function nextStep() {
-  if (active.value < 3)
+  if (active.value === 3 && missingFields.value.length > 0) {
+    showToast({
+      message: '请先完善所有必填项',
+      icon: 'warning-o',
+    })
+    return
+  }
+  if (active.value < 4)
     active.value += 1
 }
 
@@ -108,11 +119,75 @@ function prevStep() {
     active.value -= 1
 }
 
-function onSubmit() {
-  if (!formData.ebName) {
-    showToast({ message: '请输入槽号', icon: 'warning-o' })
+function getValueByPath(obj: any, path: string) {
+  return path.split('.').reduce((acc, part) => acc && acc[part], obj)
+}
+
+function validateForm() {
+  const missing: { step: number, label: string }[] = []
+
+  patrolValidationRules.forEach((rule) => {
+    if (!rule.required)
+      return
+
+    const value = getValueByPath(formData, rule.path)
+
+    let isEmpty = false
+    if (value === null || value === undefined) {
+      isEmpty = true
+    }
+    else if (typeof value === 'string' && value.trim() === '') {
+      isEmpty = true
+    }
+    else if (Array.isArray(value) && value.length === 0) {
+      isEmpty = true
+    }
+    else if (rule.type === 'number') {
+      // 业务逻辑：化验测量数据 (technicalData) 不允许为 0，但异常次数允许为 0
+      if (rule.path.startsWith('technicalData.') && (value === 0 || value === '0'))
+        isEmpty = true
+      // 如果是 null 或空字符串在上面已经处理过了
+    }
+
+    if (isEmpty) {
+      missing.push({ step: rule.step, label: rule.label })
+    }
+  })
+
+  return missing
+}
+
+function onClickStep(index: number) {
+  // 允许随时向回跳
+  if (index < active.value) {
+    active.value = index
     return
   }
+
+  // 向上跳时的逻辑
+  // 如果想跳过检查直接到提交页，且有未填项，则强制拦截到检查页
+  if (index === 4 && missingFields.value.length > 0) {
+    active.value = 3
+    showToast({
+      message: '请先完善所有必填项',
+      icon: 'warning-o',
+    })
+    return
+  }
+
+  active.value = index
+}
+
+function onSubmit() {
+  const missingFields = validateForm()
+  if (missingFields.length > 0) {
+    showToast({
+      message: `以下项未填写：\n${missingFields.map(f => f.label).slice(0, 3).join('、')}${missingFields.length > 3 ? '...' : ''}`,
+      icon: 'warning-o',
+    })
+    return
+  }
+
   loading.value = true
   setTimeout(() => {
     loading.value = false
@@ -126,11 +201,12 @@ function onSubmit() {
   <div class="page-container bg-[#fafafa] flex flex-col inset-0 fixed overflow-hidden">
     <!-- Steps Header -->
     <div class="px-4 py-3 border-b border-gray-100 bg-white shadow-sm z-40">
-      <van-steps :active="active" active-color="var(--color-primary)" inactive-color="#ebedf0">
+      <van-steps :active="active" active-color="var(--color-primary)" inactive-color="#ebedf0" @click-step="onClickStep">
         <van-step>基础项目</van-step>
         <van-step>重点观测</van-step>
         <van-step>曲线指标</van-step>
-        <van-step>确认提交</van-step>
+        <van-step>检查</van-step>
+        <van-step>提交</van-step>
       </van-steps>
     </div>
 
@@ -140,7 +216,11 @@ function onSubmit() {
       class="px-4 py-6 pb-24 flex-1 overflow-y-auto"
     >
       <transition name="van-fade" mode="out-in">
-        <component :is="[Step1BasicInfo, Step2Observation, Step3CurveTechnical, Step4Notes][active]" />
+        <component
+          :is="[Step1BasicInfo, Step2Observation, Step3CurveTechnical, Step4Validation, Step5Notes][active]"
+          :missing-fields="missingFields"
+          @change-step="active = $event"
+        />
       </transition>
     </div>
 
@@ -160,9 +240,9 @@ function onSubmit() {
       <!-- Main Action Area -->
       <div class="flex flex-1 gap-2 items-center" :class="active === 0 ? 'w-full' : 'w-3/4'">
         <!-- Intermediate Steps: Draft + Next -->
-        <template v-if="active < 3">
+        <template v-if="active < 4">
           <van-button
-            v-if="active > 0"
+            v-if="active > 0 && active !== 3"
             plain
             type="primary"
             class="w-1/3 !font-bold !rounded-xl !h-11"
@@ -174,16 +254,17 @@ function onSubmit() {
             block
             type="primary"
             class="shadow-sm !font-bold !rounded-xl !h-11"
-            :class="active > 0 ? 'flex-1' : ''"
+            :class="(active > 0 && active !== 3) ? 'flex-1' : ''"
+            :disabled="active === 3 && missingFields.length > 0"
             @click="nextStep"
           >
-            下一步
+            {{ active === 3 ? '完善后的下一步' : '下一步' }}
           </van-button>
         </template>
 
         <!-- Final Step: Submit -->
         <van-button
-          v-if="active === 3"
+          v-if="active === 4"
           block
           type="primary"
           :loading="loading"

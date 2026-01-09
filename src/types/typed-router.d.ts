@@ -79,8 +79,8 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/patrol/': RouteRecordInfo<
-      '/patrol/',
+    'Patrol': RouteRecordInfo<
+      'Patrol',
       '/patrol',
       Record<never, never>,
       Record<never, never>,
@@ -131,6 +131,13 @@ declare module 'vue-router/auto-routes' {
     '/patrol/components/Step4Notes': RouteRecordInfo<
       '/patrol/components/Step4Notes',
       '/patrol/components/Step4Notes',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/patrol/components/Step4Validation': RouteRecordInfo<
+      '/patrol/components/Step4Validation',
+      '/patrol/components/Step4Validation',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -233,7 +240,7 @@ declare module 'vue-router/auto-routes' {
     }
     'src/pages/patrol/index.vue': {
       routes:
-        | '/patrol/'
+        | 'Patrol'
       views:
         | never
     }
@@ -276,6 +283,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/patrol/components/Step4Notes.vue': {
       routes:
         | '/patrol/components/Step4Notes'
+      views:
+        | never
+    }
+    'src/pages/patrol/components/Step4Validation.vue': {
+      routes:
+        | '/patrol/components/Step4Validation'
       views:
         | never
     }
