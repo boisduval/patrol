@@ -14,8 +14,14 @@ export const patrolValidationRules: ValidationRule[] = [
   { path: 'cellType', label: '型号', step: 1, required: false },
 
   // Step 2
-  { path: 'flueObservation.openingSize', label: '烟道观测-开口', step: 2, required: true },
-  { path: 'tappingObservation.openingSize', label: '出铝观测-开口', step: 2, required: true },
+  { path: 'flueObservation.fireEyeCondition', label: '烟道端-火眼情况', step: 2, required: true, type: 'array' },
+  { path: 'flueObservation.openingSize', label: '烟道端-开口大小', step: 2, required: true },
+  { path: 'flueObservation.flameSize', label: '烟道端-火苗大小', step: 2, required: true },
+  { path: 'flueObservation.electrolyteState', label: '烟道端-电解质状态', step: 2, required: true, type: 'array' },
+  { path: 'tappingObservation.fireEyeCondition', label: '出铝端-火眼情况', step: 2, required: true, type: 'array' },
+  { path: 'tappingObservation.openingSize', label: '出铝端-开口大小', step: 2, required: true },
+  { path: 'tappingObservation.flameSize', label: '出铝端-火苗大小', step: 2, required: true },
+  { path: 'tappingObservation.electrolyteState', label: '出铝端-电解质状态', step: 2, required: true, type: 'array' },
   { path: 'slotOpeningFeatures.opening1', label: '槽孔特征-1号', step: 2, required: true },
   { path: 'slotOpeningFeatures.opening2', label: '槽孔特征-2号', step: 2, required: true },
   { path: 'slotOpeningFeatures.opening3', label: '槽孔特征-3号', step: 2, required: true },
@@ -29,7 +35,7 @@ export const patrolValidationRules: ValidationRule[] = [
   { path: 'operatingCurve.needleSwing1', label: '针摆情况(1)', step: 3, required: true },
   { path: 'operatingCurve.needleSwing2', label: '针摆情况(2)', step: 3, required: true },
   { path: 'operatingCurve.otherConditions', label: '运行曲线-其他情况', step: 3, required: true, type: 'array' },
-  
+
   // 电压异常次数
   { path: 'operatingCurve.voltageAnomalies.postPoleChangeDrop', label: '换极后下滑', step: 3, required: true, type: 'number' },
   { path: 'operatingCurve.voltageAnomalies.postTappingDrop', label: '出铝后下滑', step: 3, required: true, type: 'number' },
