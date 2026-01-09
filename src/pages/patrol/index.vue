@@ -116,34 +116,39 @@ function onSubmit() {
     </div>
 
     <!-- Fixed Footer Actions -->
-    <div class="footer-actions p-4 border-t border-gray-100 bg-white flex w-full items-center bottom-0 left-0 justify-between fixed z-50">
+    <div class="p-4 border-t border-gray-100 bg-white flex w-full items-center bottom-0 left-0 justify-between fixed z-50">
       <div v-if="active > 0" class="pr-2 w-1/3">
-        <button
-          class="van-button text-md text-gray-600 font-medium border border-gray-300 rounded-lg bg-white h-10 w-full active:bg-gray-50"
+        <van-button
+          block
+          class="!font-bold !rounded-xl !h-11"
           @click="prevStep"
         >
           上一步
-        </button>
+        </van-button>
       </div>
 
       <div :class="active === 0 ? 'w-full' : 'w-2/3'">
-        <button
+        <van-button
           v-if="active < 3"
-          class="van-button text-md text-white font-bold rounded-lg h-10 w-full shadow-sm active:opacity-90"
-          :style="{ backgroundColor: 'var(--color-primary)' }"
+          block
+          type="primary"
+          class="shadow-sm !font-bold !rounded-xl !h-11"
           @click="nextStep"
         >
           下一步
-        </button>
+        </van-button>
 
-        <button
+        <van-button
           v-if="active === 3"
-          class="van-button text-md text-white font-bold rounded-lg bg-green-500 h-10 w-full shadow-sm active:opacity-90"
-          :disabled="loading"
+          block
+          type="primary"
+          :loading="loading"
+          loading-text="提交中..."
+          class="shadow-sm !font-bold !rounded-xl !h-11"
           @click="onSubmit"
         >
-          {{ loading ? '提交中...' : '确认提交' }}
-        </button>
+          确认提交
+        </van-button>
       </div>
     </div>
   </div>
