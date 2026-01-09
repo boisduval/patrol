@@ -79,6 +79,62 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/patrol/': RouteRecordInfo<
+      '/patrol/',
+      '/patrol',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/patrol/components/FormSectionTitle': RouteRecordInfo<
+      '/patrol/components/FormSectionTitle',
+      '/patrol/components/FormSectionTitle',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/patrol/components/ObservationItem': RouteRecordInfo<
+      '/patrol/components/ObservationItem',
+      '/patrol/components/ObservationItem',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/patrol/components/SlotOpeningGrid': RouteRecordInfo<
+      '/patrol/components/SlotOpeningGrid',
+      '/patrol/components/SlotOpeningGrid',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/patrol/components/Step1BasicInfo': RouteRecordInfo<
+      '/patrol/components/Step1BasicInfo',
+      '/patrol/components/Step1BasicInfo',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/patrol/components/Step2Observation': RouteRecordInfo<
+      '/patrol/components/Step2Observation',
+      '/patrol/components/Step2Observation',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/patrol/components/Step3CurveTechnical': RouteRecordInfo<
+      '/patrol/components/Step3CurveTechnical',
+      '/patrol/components/Step3CurveTechnical',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/patrol/components/Step4Notes': RouteRecordInfo<
+      '/patrol/components/Step4Notes',
+      '/patrol/components/Step4Notes',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     'Profile': RouteRecordInfo<
       'Profile',
       '/profile',
@@ -172,6 +228,54 @@ declare module 'vue-router/auto-routes' {
     'src/pages/mock/index.vue': {
       routes:
         | 'Mock'
+      views:
+        | never
+    }
+    'src/pages/patrol/index.vue': {
+      routes:
+        | '/patrol/'
+      views:
+        | never
+    }
+    'src/pages/patrol/components/FormSectionTitle.vue': {
+      routes:
+        | '/patrol/components/FormSectionTitle'
+      views:
+        | never
+    }
+    'src/pages/patrol/components/ObservationItem.vue': {
+      routes:
+        | '/patrol/components/ObservationItem'
+      views:
+        | never
+    }
+    'src/pages/patrol/components/SlotOpeningGrid.vue': {
+      routes:
+        | '/patrol/components/SlotOpeningGrid'
+      views:
+        | never
+    }
+    'src/pages/patrol/components/Step1BasicInfo.vue': {
+      routes:
+        | '/patrol/components/Step1BasicInfo'
+      views:
+        | never
+    }
+    'src/pages/patrol/components/Step2Observation.vue': {
+      routes:
+        | '/patrol/components/Step2Observation'
+      views:
+        | never
+    }
+    'src/pages/patrol/components/Step3CurveTechnical.vue': {
+      routes:
+        | '/patrol/components/Step3CurveTechnical'
+      views:
+        | never
+    }
+    'src/pages/patrol/components/Step4Notes.vue': {
+      routes:
+        | '/patrol/components/Step4Notes'
       views:
         | never
     }

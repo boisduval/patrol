@@ -1,0 +1,72 @@
+:root {
+  /* 基础主色调 */
+  --color-primary: var(--van-primary-color, #1989fa);
+  --color-success: var(--van-success-color, #07c160);
+  --color-danger: var(--van-danger-color, #ee0a24);
+  --color-warning: var(--van-warning-color, #ff976a);
+
+  /* 基础文本色 - 遵循 Vant 规范 */
+  --van-text-color: #323233; /* 主文本 */
+  --van-text-color-2: #646566; /* 常规文本 */
+  --van-text-color-3: #969799; /* 辅助文本 */
+  --van-gray-4: #ccc; /* 禁用文本/边框 */
+
+  /* 字体大小 - 遵循 Vant 规范系统 (4px 步长) */
+  --van-font-size-xs: 10px;
+  --van-font-size-sm: 12px;
+  --van-font-size-md: 14px; /* Vant 默认字号 */
+  --van-font-size-lg: 16px;
+  --van-font-size-xl: 18px; /* 对应 text-h1 */
+
+  /* 字重 */
+  --van-font-bold: 600;
+
+  /* Line Height */
+  --van-line-height-md: 1.5;
+
+  /* 辅助背景 */
+  --color-primary-light: rgba(25, 137, 250, 0.1);
+}
+
+body {
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    'Helvetica Neue',
+    Helvetica,
+    Segoe UI,
+    Arial,
+    sans-serif;
+  color: var(--van-text-color);
+  font-size: var(--van-font-size-md);
+  line-height: var(--van-line-height-md);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 建立遵循 Vant 规范的工具类 */
+.text-h1 {
+  font-size: var(--van-font-size-xl);
+  font-weight: var(--van-font-bold);
+  color: var(--van-text-color);
+}
+
+.text-label {
+  font-size: var(--van-font-size-lg);
+  font-weight: var(--van-font-bold);
+  color: var(--van-text-color);
+}
+
+.text-item {
+  font-size: var(--van-font-size-md);
+  color: var(--van-text-color-2);
+}
+
+.text-tip {
+  font-size: var(--van-font-size-sm);
+  color: var(--van-text-color-3);
+}
+
+.text-badge-tiny {
+  font-size: var(--van-font-size-xs);
+  color: var(--van-text-color-3);
+}
