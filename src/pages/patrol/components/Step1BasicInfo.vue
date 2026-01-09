@@ -30,6 +30,24 @@ function setNow() {
   currentTime.value = [d.getHours().toString().padStart(2, '0'), d.getMinutes().toString().padStart(2, '0'), d.getSeconds().toString().padStart(2, '0')]
 }
 
+// 如果当前没有值（例如执行了重置或新打开），则默认为当前时间
+if (!formData.patrolDate) {
+  setNow()
+}
+else {
+  // 如果已有值（如从草稿恢复），解析并同步到 picker 状态
+  try {
+    const [datePart, timePart] = formData.patrolDate.split(' ')
+    if (datePart && timePart) {
+      currentDate.value = datePart.split('-')
+      currentTime.value = timePart.split(':')
+    }
+  }
+  catch (e) {
+    console.error('解析日期失败', e)
+  }
+}
+
 function onConfirmDate({ selectedValues }: { selectedValues: string[] }) {
   currentDate.value = selectedValues
   showDatePicker.value = false
