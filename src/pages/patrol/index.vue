@@ -9,64 +9,72 @@ import Step3CurveTechnical from './components/Step3CurveTechnical.vue'
 import Step4Validation from './components/Step4Validation.vue'
 import Step5Notes from './components/Step4Notes.vue'
 import { patrolValidationRules } from './validationRules'
+import { createPatrol } from '@/api/patrol'
 
 // --- State Management ---
+
+function getInitialFormData(): PatrolFormData {
+  return {
+    ebName: '',
+    patrolDate: (() => {
+      const d = new Date()
+      return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`
+    })(),
+    cellAge: '',
+    cellType: '',
+    flueObservation: {
+      fireEyeCondition: [],
+      openingSize: '',
+      flameSize: '',
+      electrolyteState: [],
+      flameColorForce: [],
+      soundSmoke: [],
+    },
+    tappingObservation: {
+      fireEyeCondition: [],
+      openingSize: '',
+      flameSize: '',
+      electrolyteState: [],
+      flameColorForce: [],
+      soundSmoke: [],
+    },
+    slotOpeningFeatures: {
+      opening1: '',
+      opening2: '',
+      opening3: '',
+      opening4: '',
+      opening5: '',
+      opening6: '',
+    },
+    operatingCurve: {
+      voltageCurveShape: '',
+      increaseDecreaseDuration: '',
+      needleSwing1: '',
+      needleSwing2: '',
+      voltageAnomalies: {
+        postPoleChangeDrop: 0,
+        postTappingDrop: 0,
+        otherDrop: 0,
+        flickering: 0,
+        effects: 0,
+      },
+      otherConditions: [],
+    },
+    technicalData: {
+      avgVoltage: null,
+      slotTemperature: null,
+      aluminumLevel: null,
+      electrolyteLevel: null,
+    },
+    notes: '',
+  }
+}
 
 const active = ref(0)
 const loading = ref(false)
 
 // Form Data Structure
-const formData = reactive<PatrolFormData>({
-  ebName: '',
-  patrolDate: new Date().toLocaleDateString().replace(/\//g, '-'),
-  cellAge: '',
-  cellType: '',
-  flueObservation: {
-    fireEyeCondition: [],
-    openingSize: '',
-    flameSize: '',
-    electrolyteState: [],
-    flameColorForce: [],
-    soundSmoke: [],
-  },
-  tappingObservation: {
-    fireEyeCondition: [],
-    openingSize: '',
-    flameSize: '',
-    electrolyteState: [],
-    flameColorForce: [],
-    soundSmoke: [],
-  },
-  slotOpeningFeatures: {
-    opening1: '',
-    opening2: '',
-    opening3: '',
-    opening4: '',
-    opening5: '',
-    opening6: '',
-  },
-  operatingCurve: {
-    voltageCurveShape: '',
-    increaseDecreaseDuration: '',
-    needleSwing1: '',
-    needleSwing2: '',
-    voltageAnomalies: {
-      postPoleChangeDrop: 0,
-      postTappingDrop: 0,
-      otherDrop: 0,
-      flickering: 0,
-      effects: 0,
-    },
-    otherConditions: [],
-  },
-  technicalData: {
-    avgVoltage: null,
-    slotTemperature: null,
-    aluminumLevel: null,
-    electrolyteLevel: null,
-  },
-  notes: '',
-})
+const formData = reactive<PatrolFormData>(getInitialFormData())
 
 provide('patrolFormData', formData)
 
@@ -189,11 +197,24 @@ function onSubmit() {
   }
 
   loading.value = true
-  setTimeout(() => {
+  createPatrol(formData).then(() => {
+    showToast({
+      message: '提交成功',
+      type: 'success',
+    })
+    // 1. 清除本地缓存
+    localStorage.removeItem(STORAGE_KEY)
+
+    // 2. 重置表单回到初始状态
+    Object.assign(formData, getInitialFormData())
+
+    // 3. 返回第一步
+    setTimeout(() => {
+      active.value = 0
+    }, 500)
+  }).catch().finally(() => {
     loading.value = false
-    showToast({ message: '提交成功', type: 'success' })
-    localStorage.removeItem(STORAGE_KEY) // Clear draft after successful submit
-  }, 1000)
+  })
 }
 </script>
 
