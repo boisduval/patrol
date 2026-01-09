@@ -31,7 +31,7 @@ const observationConfigs = [
         <ObservationItem
           v-model="formData[config.key].fireEyeCondition"
           label="火眼情况"
-          icon="i-carbon:view-filled"
+          icon="i-carbon:view"
           type="multiple"
           :options="fireEyeOptions"
         />
