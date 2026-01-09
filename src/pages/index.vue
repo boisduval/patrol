@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { PickerColumn } from 'vant'
 import { languageColumns, locale } from '@/utils/i18n'
-import { testApi } from '@/api'
 
 const { t } = useI18n()
 
@@ -28,10 +27,6 @@ function onLanguageConfirm(event: { selectedOptions: PickerColumn }) {
   locale.value = event.selectedOptions[0].value as string
   showLanguagePicker.value = false
 }
-
-onMounted(() => {
-  testApi()
-})
 </script>
 
 <template>
